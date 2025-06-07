@@ -4,6 +4,9 @@ from transformers import ViTImageProcessor, ViTForImageClassification
 from PIL import Image
 import torch
 import io
+import csv
+import os
+import datetime
 
 app = FastAPI(title="GemVision Image Classifier")
 
@@ -25,27 +28,17 @@ async def analyze_image(file: UploadFile = File(...)):
 
     predicted_label = model.config.id2label[predicted_class_idx]
 
-import csv
-import os
-import datetime
+    return JSONResponse(content={"predicted_label": predicted_label})
 
 FEEDBACK_CSV = "feedback_log.csv"
 
 @app.post("/feedback")
 async def submit_feedback(feedback: str = File(...)):
-    # تأكد من وجود الملف، وإذا مش موجود أضف رؤوس الأعمدة
     file_exists = os.path.exists(FEEDBACK_CSV)
     with open(FEEDBACK_CSV, "a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         if not file_exists:
-            writer.writerow(["timestamp", "feedback"])  # رؤوس الأعمدة
-
+            writer.writerow(["timestamp", "feedback"])
         writer.writerow([datetime.datetime.now().isoformat(), feedback])
 
     return {"message": "تم استلام ملاحظتك، شكرًا!"}
-
-    with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-
-    return {"message": "تم استلام ملاحظتك، شكرًا!"}
-

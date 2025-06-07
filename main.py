@@ -23,32 +23,27 @@ async def analyze_image(file: UploadFile = File(...)):
         logits = outputs.logits
         predicted_class_idx = logits.argmax(-1).item()
 
-    predicted_label = model.config.id2label
+    predicted_label = model.config.id2label[predicted_class_idx]
 
-import datetime
-import json
+import csv
 import os
+import datetime
 
-FEEDBACK_FILE = "feedback_log.json"
+FEEDBACK_CSV = "feedback_log.csv"
 
 @app.post("/feedback")
 async def submit_feedback(feedback: str = File(...)):
-    feedback_entry = {
-        "timestamp": datetime.datetime.now().isoformat(),
-        "feedback": feedback
-    }
+    # تأكد من وجود الملف، وإذا مش موجود أضف رؤوس الأعمدة
+    file_exists = os.path.exists(FEEDBACK_CSV)
+    with open(FEEDBACK_CSV, "a", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["timestamp", "feedback"])  # رؤوس الأعمدة
 
-    # إذا الملف موجود، اقرأه
-    if os.path.exists(FEEDBACK_FILE):
-        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    else:
-        data = []
+        writer.writerow([datetime.datetime.now().isoformat(), feedback])
 
-    # أضف الملاحظة الجديدة
-    data.append(feedback_entry)
+    return {"message": "تم استلام ملاحظتك، شكرًا!"}
 
-    # احفظ التحديث
     with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 

@@ -1,0 +1,98 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GemVision Image Classifier",
+    "version": "1.1.0",
+    "description": "تحليل الأحجار الكريمة من الصور + استقبال ملاحظات المستخدمين."
+  },
+  "servers": [
+    {
+      "url": "https://gemvision-api.onrender.com"
+    }
+  ],
+  "paths": {
+    "/analyze": {
+      "post": {
+        "summary": "تحليل صورة حجر كريم",
+        "operationId": "analyzeImage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "صورة الحجر الكريم (JPG أو PNG)"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "اسم الحجر المصنَّف",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "predicted_label": {
+                      "type": "string",
+                      "description": "اسم الحجر المصنَّف"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feedback": {
+      "post": {
+        "summary": "إرسال ملاحظات المستخدم",
+        "operationId": "submitFeedback",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "feedback": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "ملاحظة أو تعليق المستخدم"
+                  }
+                },
+                "required": ["feedback"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "تم استلام الملاحظة",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

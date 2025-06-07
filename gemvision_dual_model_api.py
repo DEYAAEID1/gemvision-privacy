@@ -19,7 +19,7 @@ color_labels = ['black', 'blue', 'green', 'purple', 'red', 'yellow']
 
 color_model = models.resnet18(weights=None)
 color_model.fc = nn.Linear(color_model.fc.in_features, len(color_labels))
-model_url = "https://drive.google.com/uc?id=1AbCdEfGH1234XYZ"  # استبدل بـ FILE_ID تبعك
+model_url = "https://drive.google.com/uc?id=1a8STyAjq7iqcUupulNFfP_ZBLygSoyHl" # استبدل بـ FILE_ID تبعك
 model_path = "gem_color_classifier.pt"
 if not os.path.exists(model_path):
     gdown.download(model_url, model_path, quiet=False)

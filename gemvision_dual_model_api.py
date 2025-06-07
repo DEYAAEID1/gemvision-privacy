@@ -5,6 +5,7 @@ from PIL import Image
 import torch
 import io
 import torch.nn as nn
+import gdown
 from torchvision import transforms, models
 
 app = FastAPI(title="GemVision – تصنيف نوع ولون الحجر الكريم")
@@ -18,7 +19,12 @@ color_labels = ['black', 'blue', 'green', 'purple', 'red', 'yellow']
 
 color_model = models.resnet18(weights=None)
 color_model.fc = nn.Linear(color_model.fc.in_features, len(color_labels))
-color_model.load_state_dict(torch.load("gem_color_classifier.pt", map_location=torch.device("cpu")))
+model_url = "https://drive.google.com/uc?id=1AbCdEfGH1234XYZ"  # استبدل بـ FILE_ID تبعك
+model_path = "gem_color_classifier.pt"
+if not os.path.exists(model_path):
+    gdown.download(model_url, model_path, quiet=False)
+
+color_model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
 color_model.eval()
 
 color_transform = transforms.Compose([
